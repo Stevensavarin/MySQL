@@ -61,7 +61,7 @@ create table nombre_nueva_tabla like tabla_existente;
 select * from autores;
 
 (PASAR ARCHIVOS COMPLETOS AL MYSQL CON SOURCE)
-source C:/Users/srssd/OneDrive/Desktop/MySQL/curso_db/sentencias.sql;
+source C:/Users/Desktop/MySQL/curso_db/sentencias.sql;
 
 (AÑADIR UNA COLUMNA NUEVA)
 alter table libros add ventas int unsigned not null;
