@@ -1,0 +1,495 @@
+cd C:\Program Files\MySQL\MySQL Server 8.0\bin
+
+y desde ahí pones el siguiente comando
+
+mysql -u root -p "contraseña"
+
+Cabe agregar que el -u es de usuario, si lo dejaste root, según este curso, la línea anterior va con el -u root, sino sería otro usuario. 
+---------------------------------------------------------------------
+(OBTERNER VALOR DE VARIABLE)
+select VARIABLE; 
+select @nombre, @curso, @gestor;(es valido conseguir diferentes variables en un llamada)
+
+
+(LIMPIAR) 
+mysql > system cls OR mysql>\! cls
+
+(DECLARAR VARIABLES)
+set @nombre = "Steven";
+ejemplos = @suma = @val1 + @val2;
+       set @nombre := "Steven";
+       set @curso = "base de datos", @gestor = "Mysql";
+
+(CREAR BASE DE DATOS)
+create database NOMBRE_DE_LA_BASE_DE_DATOS;
+
+(VISUALIZAR BASE DE DATOS)
+show databases;
+
+(CREAR UNA TABLA)
+CREATE TABLE autores(
+  autor_id INT,
+  nombre VARCHAR(25),
+  apellido VARCHAR(25),
+  genero CHAR(1), -- M o F
+  fecha_nacimiento DATE,
+  pais_origen VARCHAR(40)
+);
+
+(ELIMINAR UNA TABLA)
+drop table nombre_de_la_tabla;
+
+(ELIMINAR BASE DE DATOS COMPLETA)
+drop database libreria_cf;
+
+(SELECCIONAR LA BASE DE DATOS)
+use NOMBRE_DE_LA_BASE_DE_DATOS;
+
+(CONOCER LAS TABLAS DE NUESTRA BASE DE DATOS)
+show tables;
+
+(SABER EN QUE BASE DE DATOS ESTAMOS TRABAJANDO)
+select database();
+
+(OBTENER INFORMACIÓN DE UNA TABLA)
+show columns nombre_de_la_tabla;
+
+(CREAR TABLAS DE UNA TABLA EXISTENTE)
+create table nombre_nueva_tabla like tabla_existente;
+
+(CONSULTAR TODOS LOS REGISTROS DE UNA TABLA)
+select * from autores;
+
+(PASAR ARCHIVOS COMPLETOS AL MYSQL CON SOURCE)
+source C:/Users/srssd/OneDrive/Desktop/MySQL/curso_db/sentencias.sql;
+
+(AÑADIR UNA COLUMNA NUEVA)
+alter table libros add ventas int unsigned not null;
+
+(ELIMINAR UNA COLUMNA)
+alter table libros drop column ventas
+
+(OBETENER TODOS LOS REGISTROS Y/O REGISTRO ESPECIFICO -AND, OR ,NOT)
+select * from libros\G;
+select libro_id, titulo from libros;
+select * from libros where titulo = "Carrie";
+select * from libros where titulo = "Carrie" and autor_id = 1;
+select * from libros where titulo = "Carrie" and autor_id = 1 and ventas = 0;
+select * from libros where titulo = "Carrie" or autor_id = 1 or ventas = 0;
+select * from libros where titulo = "Carrie" or autor_id = 1 or ventas = 10;
+select * from libros where (autor_id = 1 and titulo = "Carrie") or (autor_id = 5 and titulo = "El hobbit");
+select * from autores where seudonimo is null;
+select * from autores where seudonimo is not null;
+select * from autores where seudonimo <=> null;
+select distinct titulo from libros;
+
+(COLOCAR ALIAS A LAS COLUMNAS)
+select autor_id AS autor, titulo AS nombre from libros;
+mysql> select 9 * 10;
++--------+
+| 9 * 10 |
++--------+
+|     90 |
++--------+
+1 row in set (0.01 sec)
+
+mysql> select 9 * 10 as resultado;
++-----------+
+| resultado |
++-----------+
+|        90 |
++-----------+
+1 row in set (0.00 sec)
+
+(ACTUALIZAR REGISTROS)
+update libros set descripcion = "Nueva descripción", ventas = 100;
+update libros set descripcion = "Nuevo cambio", ventas = 50 where titulo = "El hobbit";
+update libros set descripcion = "Nuevo cambio", ventas = 80 where libro_id = 41;
+
+(ELIMINAR TODOS LOS REGISTROS O UN REGISTRO ESPECIFICO)
+DELETE FROM libros;
+DELETE FROM libros WHERE autor_id = 1;
+DELETE FROM libros WHERE libro_id = 55;
+
+(ELIMINACIÓN EN CASCADA)
+delete from libros where autor_id = 1; (elimanar el uso de el autor 1 en tabla libros)
+delete from autores where autor_id = 1;(para luego elimarlo de autor en tabla autores)
+ON DELETE CASCADE delete from autores where autor_id = 1;
+ALTER TABLE libros FOREIGN KEY (autor_id) REFERENCES autores(autor_id) ON DELETE CASCADE
+
+(RESTAURAR DEFINICIÓN DE UNA TABLA)
+truncate table libros;
+
+(FUNCIONES SOBRE STRINGS)
+select concat(nombre, " ", apellido) as nombre_completo from autores;
+
+(CANTIDAD DE CARACTERES USANDO LENGHT)
+select length("hola mundo");
+select * from autores where length(nombre) > 7;
+
+(UPPER, LOWER, TRIM para eliminar espacios al princio y al final)
+select upper(nombre), lower(nombre) from autores;
+select trim("                cadena con espacios al inicio y al final        ");
+
+(LEFT, RIGHT)
+       select
+    -> left("Esta es una cadena de caracteres", 5) as substrin_izquierdo,
+    -> right("Esta es una cadena de caracteres", 10) as substring_derecho;
+select * from libros where left(titulo, 12) = "Harry Potter";
+select * from libros where right(titulo, 6) = "anillo";
+
+(FUNCIONES SOBRE NUMEROS)
+
+(FUNCION RAND(), ROUND(), TRUNCATE(), POW())
+select rand();
+select round ( rand() * 100 );
+select truncate(1,123456789, 3);
+select pow(2, 16);
+
+(FUNCIONES SOBRE FECHAS)
+select now();
+set @now = NOW();
+select second(@now),
+    -> minute(@now),
+    -> hour(@now),
+    -> month(@now),
+    -> year(@now);
+select dayofweek(@now), dayofmonth(@now), dayofyear(@now);
+(TIME A DATE)
+select date(@now);
+(OBTENER FECHA DE CREACION)
+select * from libros where date(fecha_creacion) = curdate();
+select curdate();
+(AGREGAR O DISMINUIR TIEMPO O DIAS)
+select @now + interval 30 DAY; (puede ser minutos,dias, años, etc)
+select @now - interval 30 DAY; (puede ser minutos,dias, años, etc)
+
+(FUNCIONES SOBRE CONDICIONES -- IF)
+select if(10 > 9, "El número si es mayor", "El número no es mayor")
+select if(paginas = 0, "El libro no posee páginas", paginas) from libros;
+update libros set paginas = 10 where libro_id > 20;
+select ifnull(seudonimo "El autor no cuenta con un seudonimo") from autores;
+
+(CREAR FUNCIONES)
+SET GLOBAL log_bin_trust_function_creators = 1;
+CREATE FUNCTION agregar_dias(fecha DATE, dias INT)
+RETURNS DATE
+BEGIN
+  RETURN fecha + INTERVAL dias DAY;
+END//
+delimiter ;D
+set @now = curdate();
+mysql> select @now;
++------------+
+| @now       |
++------------+
+| 2023-08-30 |
++------------+
+mysql> select agregar_dias(@now, 60);
++------------------------+
+| agregar_dias(@now, 60) |
++------------------------+
+| 2023-10-29             |
++------------------------+
+
+(LISTAR FUNCIONES)
+select routine_name from information_schema.routines where routine_schema = database() and routine_type = 'FUNCTION';
+
+(ELIMINAR FUNCION)
+drop function agregar_dias;
+
+(LLAMAR UNA FUNCION)
+update libros set paginas = obtener_paginas();
+
+(SENTENCIAS AVANZADAS, LIKE)
+select * from libros where titulo LIKE "Harry potter%"; -- principio%
+select * from libros where titulo LIKE "%anillo"; -- %final
+select * from libros where titulo LIKE "%la%";
+select * from libros where titulo like "__b__";
+select * from libros where titulo like "_a%";
+select * from libros where titulo like "_a__o%";
+
+(EXPRESIONES REGULARES)
+select autor_id, titulo from libros where titulo like "H%" OR titulo LIKE "L%";
+select autor_id, titulo from libros where left(titulo, 1) = "H" OR left (titulo, 1) = "L";
+select titulo from libros where titulo REGEXP "^[HLAVTZ]";
+
+(ORDERNAR TITULOS)
+select titulo from libros order by titulo asc; --ascendente
+select titulo from libros order by titulo DESC; -- descendente
+select libro_id, titulo from libros order by libro_id DESC;
+select libro_id, titulo from libros order by libro_id asc;
+select libro_id, titulo from libros order by libro_id and titulo asc;
+
+(LIMITAR REGISTROS)
+select titulo from libros limit 10;
+select titulo from libros where autor_id = 2 limit 50;
+select libro_id, titulo from libros limit 0, 5; -- 0 donde comienza -- 5 cantidad que deseo agregar
+
+(FUNCIONES DE AGREGACION - COUNT(), SUM(), MAX(), MIN(), AVG())
+select count(*) from autores; -- el * inidica que se cuenten todos los registros
+select count(*) as total from autores where seudonimo is not null;
+select count(seudonimo) as total from autores;
+select sum(ventas) from libros;
+select max(ventas) from libros;
+select min(ventas) from libros;
+select avg(ventas) from libros;
+
+(AGRUPAMIENTO, GROUP BY, ORDER BY)
+select autor_id, sum(ventas) from libros group by autor_id;
+select autor_id, sum(ventas) as total from libros group by autor_id order by total desc limit 1;
+
+(CONDICIONES BAJO AGRUPAMIENTO, HAVING)
+select autor_id, sum(ventas) as total from libros group by autor_id having sum(ventas) > 100;
+
+(UNIR RESULTADO)
+select CONCAT(nombre, " ", apellido) AS nombre_completo, "" AS email, pais_origen AS pais_de_origen FROM autores
+UNION
+SELECT CONCAT(nombre, " ", apellidos) AS nombre_completo, email, "" FROM usuarios;
+
+(SUB CONSULTAS)
+SELECT AVG(ventas) FROM libros; -- 254.5091
+
+SET @promedio = (SELECT AVG(ventas) FROM libros);
+
+SELECT 
+  autor_id 
+FROM libros 
+GROUP BY autor_id 
+HAVING SUM(ventas) > @promedio;
+
+SELECT CONCAT(nombre, " ", apellido) AS nombre
+FROM autores
+WHERE autor_id IN(
+SELECT 
+  autor_id 
+FROM libros 
+GROUP BY autor_id 
+HAVING SUM(ventas) > (SELECT AVG(ventas) FROM libros));
+
+(VALIDAR REGISTROS, EXIST)
+SELECT IF(
+    EXISTS(SELECT libro_id FROM libros WHERE titulo = "El Hobbit"),
+    "Disponible",
+    "No disponible"
+)AS menaje;
+
+(JOINS)
+
+(INNER JOIN)
+SELECT 
+  libros.titulo,
+  CONCAT(autores.nombre, " ", autores.apellido) AS nombre_autor,
+  libros.fecha_creacion
+FROM libros
+INNER JOIN autores ON libros.autor_id = autores.autor_id;
+
+SELECT 
+  libros.titulo,
+  CONCAT(autores.nombre, " ", autores.apellido) AS nombre_autor,
+  libros.fecha_creacion,
+  autores.seudonimo
+FROM libros
+INNER JOIN autores ON libros.autor_id = autores.autor_id 
+          AND autores.seudonimo IS NOT NULL;
+
+(LEFT JOIN)
+SELECT
+  CONCAT(nombre, " ", apellidos),
+  libros_usuarios.libro_id
+FROM usuarios
+LEFT JOIN libros_usuarios ON usuarios.usuario_id = libros_usuarios.usuario_id;
+
+SELECT
+  CONCAT(nombre, " ", apellidos),
+  libros_usuarios.libro_id
+FROM usuarios
+LEFT JOIN libros_usuarios ON usuarios.usuario_id = libros_usuarios.usuario_id
+WHERE libros_usuarios.libro_id IS NOT NULL;
+
+SELECT
+  CONCAT(nombre, " ", apellidos),
+  libros_usuarios.libro_id
+FROM usuarios
+LEFT JOIN libros_usuarios ON usuarios.usuario_id = libros_usuarios.usuario_id
+WHERE libros_usuarios.libro_id IS NULL; --NOT NULL OR SIN LA CONDICION WHERE
+
+(RIGHT JOIN OR RIGHT OUTER JOIN)
+SELECT
+  CONCAT(nombre, " ", apellidos),
+  libros_usuarios.libro_id
+FROM libros_usuarios
+RIGHT JOIN usuarios ON usuarios.usuario_id = libros_usuarios.usuario_id
+WHERE libros_usuarios.libro_id IS NULL; --NOT NULL OR SIN LA CONDICION WHERE
+
+(MULTIPLES JOINS)
+SELECT DISTINCT
+  CONCAT(usuarios.nombre, " ", usuarios.apellidos) AS nombre_usuario
+FROM usuarios
+INNER JOIN libros_usuarios ON usuarios.usuario_id = libros_usuarios.usuario_id
+            AND DATE(libros_usuarios.fecha_creacion) = CURDATE()
+INNER JOIN libros ON libros_usuarios.libro_id = libros.libro_id
+INNER JOIN autores ON libros.autor_id = autores.autor_id 
+            AND autores.seudonimo is NOT NULL;
+
+(PRODUCTOS CARTESIANOS - CROSS)
+SELECT usuarios.username, libros.titulo FROM usuarios CROSS JOIN libros ORDER BY username DESC;
+INSERT INTO libros_usuarios (libro_id, usuario_id) SELECT libro_id, usuario_id FROM usuarios CROSS JOIN libros;
+
+(VISTAS)
+CREATE VIEW prestamos_usuarios_vw AS
+SELECT
+  usuarios.usuario_id,
+  usuarios.nombre,
+  usuarios.email,
+  usuarios.username,
+  COUNT(usuarios.usuario_id) AS total_prestamos
+FROM usuarios
+INNER JOIN libros_usuarios ON usuarios.usuario_id = libros_usuarios.usuario_id
+GROUP BY usuarios.usuario_id;
+SHOW TABLES;
+drop view prestamos_usuarios_vw;
+
+(CREAR PROCEDIMIENTOS)
+DELIMITER //
+
+CREATE PROCEDURE prestamo(usuario_id INT, libro_id INT)
+BEGIN
+   INSERT INTO libros_usuarios(libro_id, usuario_id) VALUES(libro_id, usuario_id);
+   UPDATE libros SET stock = stock - 1 WHERE libros.libro_id = libro_id;
+END//
+
+DELIMITER ;
+
+-select routine_name from information_schema.routines where routine_schema = database() and routine_type = 'PROCEDURES';
+
+-SELECT routine_name FROM information_schema.routines
+
+(ELIMINAR PROCEDIMIENTO)
+drop procedure prestamo;
+
+(OBTENER VALORES)
+DELIMITER //
+
+CREATE PROCEDURE prestamo(usuario_id INT, libro_id INT, OUT cantidad INT)
+BEGIN
+   INSERT INTO libros_usuarios(libro_id, usuario_id) VALUES(libro_id, usuario_id);
+   UPDATE libros SET stock = stock - 1 WHERE libros.libro_id = libro_id;
+
+   SET cantidad = (SELECT stock FROM libros WHERE libros.libro_id = libro_id);
+END//
+
+DELIMITER ;
+
+(CONDICIONALES)
+DELIMITER //
+
+CREATE PROCEDURE prestamo(usuario_id INT, libro_id INT, OUT cantidad INT)
+BEGIN
+
+   SET cantidad = (SELECT stock FROM libros WHERE libros.libro_id = libro_id);
+	
+   IF cantidad > 0 THEN 
+
+     INSERT INTO libros_usuarios(libro_id, usuario_id) VALUES(libro_id, usuario_id);
+     UPDATE libros SET stock = stock - 1 WHERE libros.libro_id = libro_id;
+
+     SET cantidad = cantidad - 1;
+
+   ELSE
+  
+     SELECT "No es posible realizar el prestamo" AS mensaje_error;
+
+   END IF;
+
+END//
+
+DELIMITER ;
+
+(CICLOS)
+DELIMITER //
+CREATE PROCEDURE libros_azar()
+BEGIN
+  SET @iteracion = 0;
+
+  WHILE @iteracion < 5 DO
+    
+    SELECT libro_id, titulo FROM libros ORDER BY RAND() LIMIT 1;
+    SET @iteracion = @iteracion + 1;
+  
+  END WHILE;
+
+END //
+
+CREATE PROCEDURE libros_azar()
+BEGIN
+  SET @iteracion = 0;
+
+  REPEAT
+    
+    SELECT libro_id, titulo FROM libros ORDER BY RAND() LIMIT 1;
+    SET @iteracion = @iteracion + 1;
+  
+    UNTIL @iteracion >= 5
+  END REPEAT;
+
+END //
+
+DELIMITER ;
+
+(IMPLEMENTAR TRANSACCIONES)
+START TRANSACTION;
+SET @libro_id = 20, @usuario_id = 3;
+
+UPDATE libros SET stock = stock - 1 WHERE libro_id = libro_id;
+SELECT stock FROM libros WHERE libro_id =  @libro_id;
+
+INSERT INTO libros_usuarios(libro_id, usuario_id) VALUES(@libro_id, @usuario_id);
+SELECT * FROM libros_usuarios;
+COMMIT; -- cierra el start y ya no se puede realizar cambios
+ROLLBACK -- revierte los cambios
+
+Si deseamos crear una tabla utilizando un motor en particular, debemos seguir la siguiente estructura.
+
+CREATE TABLE tabla_innodb (id int, value int) ENGINE=INNODB;
+CREATE TABLE tabla_myisam (id int, value int) ENGINE=MYISAM;
+CREATE TABLE tabla_default (id int, value int);
+
+SELECT table_name, engine
+
+FROM information_schema.tables
+
+WHERE table_schema = 'libreria_cf'
+
+AND table_name = 'libros';
+
+(CREACION TRIGGERS)
+DELIMITER //
+
+CREATE TRIGGER after_insert_actualizacion_libros 
+AFTER INSERT ON libros
+FOR EACH ROW 
+BEGIN
+  UPDATE autores SET cantidad_libros = cantidad_libros + 1 WHERE autor_id = NEW.autor_id;
+END;
+//
+
+DELIMITER ;
+
+CREATE TRIGGER after_delete_actualizacion_libros
+AFTER DELETE ON libros
+FOR EACH ROW
+BEGIN
+  UPDATE autores SET cantidad_libros = cantidad_libros - 1 WHERE autor_id = OLD.autor_id;
+END;
+//
+
+DELIMITER ;
+
+(SABER CANTIDAD DE TRIGGERS Y ELIMINAR TRIGGERS)
+SHOW TRIGGERS\G;
+
+
+
+
+

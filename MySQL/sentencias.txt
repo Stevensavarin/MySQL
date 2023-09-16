@@ -1,0 +1,61 @@
+/* 
+Qué tipo de entidades? autores
+Nombre : autores
+*/
+
+--Nombre
+--Genero
+--Fecha de nacimiento
+--País de origen
+
+--columna y el tipo de dato
+
+DROP DATABASE IF EXISTS libreria_cf;
+CREATE DATABASE IF NOT EXISTS libreria_cf;
+
+USE libreria_cf;
+
+CREATE TABLE IF NOT EXISTS autores(
+  autor_id INT NOT NULL,
+  nombre VARCHAR(25) NOT NULL,
+  apellido VARCHAR(25) NOT NULL,
+  seudonimo VARCHAR(50) UNIQUE,
+  genero CHAR(1) NOT NULL, -- M o F
+  fecha_nacimiento DATE NOT NULL,
+  pais_origen VARCHAR(40) NOT NULL
+);
+
+
+INSERT INTO autores (autor_id, nombre, apellido, genero, fecha_nacimiento, pais_origen)
+VALUES (1, "Test autor", "Codi", "M", "2018-01-01", "Aruba"),
+       (2, "Test autor", "Codi", "M", "2018-01-01", "Aruba"),
+       (3, "Test autor", "Codi", "M", "2018-01-01", "Aruba"),
+       (4, "Test autor", "Codi", "M", "2018-01-01", "Aruba"),
+       (5, "Test autor", "Codi", "M", "2018-01-01", "Aruba");
+
+INSERT INTO autores (autor_id, nombre, apellido, seudonimo, genero, fecha_nacimiento, pais_origen)
+VALUES(10, "Stephen Edwin", "King", "Richard Bachman", "M", "1947-09-27", "USA");
+
+SELECT * FROM autores;
+
+--------------------Modulo 4--------------------------------
+DROP DATABASE IF EXISTS libreria_cf;
+CREATE DATABASE IF NOT EXISTS libreria_cf;
+
+USE libreria_cf;
+
+CREATE TABLE IF NOT EXISTS autores(
+  autor_id INT UNSIGNED NOT NULL,
+  nombre VARCHAR(25) NOT NULL,
+  apellido VARCHAR(25) NOT NULL,
+  seudonimo VARCHAR(50) UNIQUE,
+  genero CHAR(1) NOT NULL, -- M o F
+  fecha_nacimiento DATE NOT NULL,
+  pais_origen VARCHAR(40) NOT NULL,
+  fecha_creacion DATETIME DEFAULT current_timestamp
+);
+
+INSERT INTO autores (autor_id, nombre, apellido, seudonimo, genero, fecha_nacimiento, pais_origen)
+VALUES(-10, "Stephen Edwin", "King", "Richard Bachman", "M", "1947-09-27", "USA"); --error -10 UNSIGNED
+
+SELECT * FROM autores;
